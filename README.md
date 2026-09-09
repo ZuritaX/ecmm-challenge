@@ -98,16 +98,64 @@ Completa este espacio antes de entregar tu solución.
 
 ### Instrucciones de ejecución
 
-Indica los comandos necesarios para instalar las dependencias, configurar la base
-de datos, ejecutar el backend, ejecutar la interfaz y correr las pruebas. La
-solución debe poder levantarse siguiendo únicamente estas instrucciones.
+=========== Comandos necesarios Backend =======================================
+pip install -r requirements.txt (En este caso se uso miniconda pero usar gestor de paquetes a conveniencia)
+python manage.py makemigrations
+python manage.py migrate
+python manage.py test 
+python manage.py Runserver
 
-### Decisiones y observaciones
 
-Describe brevemente cualquier decisión técnica relevante, supuesto, limitación o
-mejora pendiente.
+Filtro por producto http://localhost:8000/api/productos/?search=018
+Filtro por Categoria http://localhost:8000/api/productos/?categoria=2
+
+=========== Comandos necesarios Frotend =======================================
+npm install
+npm run dev
+
+
+
+
+## Decisiones y observaciones
+
+### Decisiones técnicas
+
+Opté por una sola app de Django (`catalogo`) en vez de separar productos y categorías en apps distintas. Al final Producto depende directamente de Categoria, así que separarlas solo iba a agregar imports cruzados y configuración extra sin necesidad real para un catálogo de este tamaño.
+
+En la relación entre Producto y Categoria usé `on_delete=PROTECT`. Como categoría es obligatoria, no tenía sentido permitir que al borrar una categoría sus productos quedaran sin categoría (`SET_NULL`) o se borraran en cascada sin previo aviso (`CASCADE`). Con `PROTECT`, si una categoría tiene productos asociados, simplemente no se puede eliminar hasta reasignarlos o borrarlos primero.
+
+Para el precio usé `DecimalField` en vez de `FloatField`, porque con `float` pueden aparecer errores de redondeo al trabajar con dinero. Para el stock, `PositiveIntegerField` ya cubre por sí solo la regla de "entero mayor o igual a cero", sin necesidad de agregar validaciones extra.
+
+En el serializer de producto, la categoría se devuelve anidada (con id y nombre) al leer, pero se recibe como un id simple al crear/editar. Así el listado ya trae el nombre de la categoría sin que el frontend tenga que cruzar datos con otra llamada.
+
+El filtro por categoría y la búsqueda por nombre se resolvieron con `django-filter` y el `SearchFilter` de DRF, en vez de escribir la lógica de filtrado a mano — es el enfoque estándar del framework y evita reinventar algo que DRF ya resuelve bien.
+
+### Supuestos
+
+Asumí que un producto pertenece a una sola categoría, ya que el enunciado la menciona en singular y no se pide lo contrario. Si se necesitara que un producto tuviera varias categorías, el cambio sería pasar de `ForeignKey` a `ManyToManyField`.
+
+### Seguridad
+
+No se implementó ninguna configuración de seguridad (autenticación, permisos, variables de entorno protegidas, etc.), ya que el enunciado indica explícitamente que no se requiere. Los archivos `.env` se dejaron incluidos en el repositorio, sin ocultar ni mover a `.gitignore`, a propósito, para que quien revise el examen pueda levantar el proyecto directamente sin tener que configurar credenciales o variables por su cuenta, asimismo con el settings del backend.
+
+### Interfaz / UX-UI
+
+El foco estuvo en que la interfaz sea funcional y clara, no en el diseño visual — no se trabajó UX/UI de forma dedicada. Se hizo un responsive básico para que se vea razonablemente bien tanto en escritorio como en mobile, pero no se profundizó más allá de eso.
+
+### Limitaciones / mejoras pendientes
+
+- No se implementó paginación en el listado de productos.
+- No hay ordenamiento configurable desde la API, solo el orden por defecto del modelo.
+- No se capturó explícitamente el error al intentar borrar una categoría con productos asociados (`ProtectedError`); quedaría como mejora devolver un mensaje más claro en vez del error por defecto.
+- Solo se cubrieron los dos tests mínimos pedidos (creación válida y rechazo de datos inválidos); no se agregaron tests para categorías ni para filtro/búsqueda.
 
 ### Herramientas de IA utilizadas
 
-Si utilizaste herramientas de IA, indica cuáles y para qué. Si no utilizaste
-ninguna, indícalo también.
+Se utilizó GitHub Copilot como apoyo puntual durante el desarrollo, principalmente para:
+
+- Autocompletado de código en tareas repetitivas.
+- Mejoras menores en el diseño del frontend.
+- Sugerencias de validaciones adicionales.
+- Desacoplar componentes en piezas más pequeñas para mejorar la legibilidad.
+
+El uso fue acotado y como apoyo dentro del flujo normal de desarrollo, no como generador de la solución completa. Para un proyecto de mayor complejidad, habría considerado un enfoque más agéntico apoyado en alguna metodología como spec-driven development, pero para el alcance de este ejercicio no fue necesario
