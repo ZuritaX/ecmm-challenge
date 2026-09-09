@@ -136,7 +136,7 @@ Asumí que un producto pertenece a una sola categoría, ya que el enunciado la m
 
 ### Seguridad
 
-No se implementó ninguna configuración de seguridad (autenticación, permisos, variables de entorno protegidas, etc.), ya que el enunciado indica explícitamente que no se requiere. Los archivos `.env` se dejaron incluidos en el repositorio, sin ocultar ni mover a `.gitignore`, a propósito, para que quien revise el examen pueda levantar el proyecto directamente sin tener que configurar credenciales o variables por su cuenta.
+No se implementó ninguna configuración de seguridad (autenticación, permisos, variables de entorno protegidas, etc.), ya que el enunciado indica explícitamente que no se requiere. Los archivos `.env` se dejaron incluidos en el repositorio, sin ocultar ni mover a `.gitignore`, a propósito, para que quien revise el examen pueda levantar el proyecto directamente sin tener que configurar credenciales o variables por su cuenta, asimismo con el settings del backend.
 
 ### Interfaz / UX-UI
 
