@@ -12,7 +12,7 @@ function FiltrosProductos({
     <div className="mb-4 flex flex-col gap-2 sm:flex-row">
       <input
         type="search"
-        placeholder="Buscar producto..."
+        placeholder="Buscar por nombre, descripción o categoría..."
         value={busqueda}
         onChange={(event) => setBusqueda(event.target.value)}
         className="w-full flex-1 rounded-md bg-slate-400 px-4 py-2 text-white placeholder:text-slate-200"
